@@ -11,33 +11,6 @@ import { createCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
 
-const FormRow2 = styled.div`
-  display: grid;
-  align-items: center;
-  grid-template-columns: 24rem 1fr 1.2fr;
-  gap: 2.4rem;
-
-  padding: 1.2rem 0;
-
-  &:first-child {
-    padding-top: 0;
-  }
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-
-  &:has(button) {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1.2rem;
-  }
-`;
-
 function CreateCabinForm() {
   const { register, handleSubmit, reset, getValues, formState } = useForm();
   const { errors } = formState;
@@ -47,7 +20,7 @@ function CreateCabinForm() {
   const { mutate, isLoading: isCreating } = useMutation({
     mutationFn: createCabin,
     onSuccess: () => {
-      toast.success("New Cabib successfully created");
+      toast.success("New Cabin successfully created");
       queryClient.invalidateQueries({
         queryKey: ["cabins"],
       });
@@ -59,7 +32,7 @@ function CreateCabinForm() {
   });
 
   function onSubmit(data) {
-    mutate(data);
+    mutate({ ...data, image: data.image[0] });
   }
 
   function onError(errors) {
@@ -103,7 +76,7 @@ function CreateCabinForm() {
             required: "This field is required",
             min: {
               value: 1,
-              message: "Capacity should be atleast 1",
+              message: "Regular Price should be atleast 1",
             },
           })}
         />
@@ -118,7 +91,7 @@ function CreateCabinForm() {
           {...register("discount", {
             required: "This field is required",
             validate: (value) =>
-              value <= getValues().regularPrice ||
+              parseInt(value) <= parseInt(getValues().regularPrice) ||
               "Discount should be less than actual price",
           })}
         />
@@ -142,16 +115,20 @@ function CreateCabinForm() {
           accept="image/*"
           {...register("image")}
           disabled={isCreating}
+          type="file"
+          {...register("image", {
+            required: "This field is required",
+          })}
         />
       </FormRow>
 
-      <FormRow2>
+      <FormRow>
         {/* type is an HTML attribute! */}
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
         <Button disabled={isCreating}>Create cabin</Button>
-      </FormRow2>
+      </FormRow>
     </Form>
   );
 }
