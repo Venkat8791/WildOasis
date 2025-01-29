@@ -9,13 +9,14 @@ import Empty from "../../ui/Empty";
 function CabinTable() {
   const { isLoading, error, cabins } = useCabins();
   const [searchParams] = useSearchParams();
-  if (!cabins.length) {
-    return <Empty resourceName="cabins" />;
-  }
 
   if (isLoading) {
     return <Spinner />;
   }
+  if (!cabins.length) {
+    return <Empty resourceName="cabins" />;
+  }
+
   const filter = searchParams.get("discount") || "all";
   //1.filter
   let filteredCabins;
